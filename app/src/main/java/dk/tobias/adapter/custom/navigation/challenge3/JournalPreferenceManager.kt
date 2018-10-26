@@ -59,8 +59,11 @@ class JournalPreferenceManager(context: Context) {
         for (jsonEntry in myJournalList) {
             val currentEntry = gson.fromJson(jsonEntry, JournalEntry::class.java)
             journalArrayList.add(currentEntry)
+
         }
-        return journalArrayList
+        //sort by timestamp
+        val sortedList=journalArrayList.sortedWith(compareBy {it.timestamp})
+        return ArrayList(sortedList)
     }
 
     private fun getHashSet() : HashSet<String> = HashSet(preference.getStringSet(PREFS_KEY_JOURNAL_SET, HashSet<String>()))
