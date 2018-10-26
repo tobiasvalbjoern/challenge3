@@ -1,5 +1,4 @@
 package dk.tobias.adapter.custom.navigation.challenge3
-
 import android.app.Activity
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
@@ -7,12 +6,13 @@ import android.os.Bundle
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_view_journal.*
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class ViewJournalActivity : AppCompatActivity() {
-    private val RC_SECOND_ACTIVITY=1000
+    private val RC_UPDATED_JOURNAL=1000
 
     private var title : String? = ""
     private var description : String? = ""
@@ -24,10 +24,11 @@ class ViewJournalActivity : AppCompatActivity() {
 
         val toolbar = findViewById<Toolbar>(R.id.view_journal_toolbar)
         setSupportActionBar(toolbar)
+        //You can come back to home from here.
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-
-        toolbar.setNavigationOnClickListener { view ->
+        //listener for when the user presses the back button.
+        toolbar.setNavigationOnClickListener { _ ->
             val returnIntent = Intent()
             //title and description can be empty, but
             //if the timestamp is empty, the user has not
@@ -42,7 +43,7 @@ class ViewJournalActivity : AppCompatActivity() {
             finish()
         }
 
-
+        //If there is information to be displayed in the entry. Get it from main, else don't show.
         val extras = intent.extras ?: return
         val title = extras.get("viewTitle")
         val description = extras.get("viewDescription")
@@ -60,19 +61,22 @@ class ViewJournalActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
 
+        //When is used, so it is possible to add more menu items.
         when (item?.itemId) {
             R.id.view_journal_menu_edit -> {
+                //Information from entry to the editTexts in the new Journal.
                 val i = Intent(this, NewJournalActivity::class.java)
                 i.putExtra("viewTitle", view_journal_title.text.toString())
                 i.putExtra("viewDescription", view_journal_description.text.toString())
-                //startActivity(i)
-                startActivityForResult(i,RC_SECOND_ACTIVITY)
+                //If the user makes an edit, we want the updated information.
+                startActivityForResult(i,RC_UPDATED_JOURNAL)
+                Toast.makeText(this, "Edit Clicked", Toast.LENGTH_SHORT).show()
             }
         }
         return super.onOptionsItemSelected(item)
     }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if(requestCode==RC_SECOND_ACTIVITY){
+        if(requestCode==RC_UPDATED_JOURNAL){
             if(resultCode== Activity.RESULT_OK){
                 title = data?.getStringExtra("title")
                 description= data?.getStringExtra("description")
@@ -80,10 +84,12 @@ class ViewJournalActivity : AppCompatActivity() {
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
                 timestamp = current.format(formatter)
 
+                //These variables can be send back to main, where they can be used to store
+                //the information via sharedpreferences and update the list view.
                 view_journal_title.text = title
                 view_journal_description.text = description
                 view_journal_time_stamp.text=timestamp
             }
         }
-}
+    }
 }

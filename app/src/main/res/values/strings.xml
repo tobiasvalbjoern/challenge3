@@ -1,9 +1,13 @@
 <resources>
     <string name="app_name">Challenge3</string>
-    <string name="title">title</string>
+    <string name="title">Title</string>
     <string name="description">description</string>
     <string name="alertDeleteConfirmationTitle">Remove</string>
     <string name="alertDeleteConfirmationText">Are you sure you want to delete the entry?</string>
     <string name="alertSetPositiveButtonText">Delete</string>
     <string name="alertSetNegativeButtonText">Cancel</string>
+    <string name="save">Save</string>
+    <string name="this_is_description">This is description</string>
+    <string name="override_info">This field will be overwritten</string>
+    <string name="edit">edit</string>
 </resources>

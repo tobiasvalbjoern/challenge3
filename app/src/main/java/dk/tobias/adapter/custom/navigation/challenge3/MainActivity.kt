@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var journalAdapter: JournalListAdapter
     private lateinit var preferenceManager : JournalPreferenceManager
 
-    private val RC_SECOND_ACTIVITY=1000
+    private val RC_UPDATED_JOURNAL=1000
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -28,9 +28,9 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         val fab: View = findViewById(R.id.fab)
-        fab.setOnClickListener { view ->
+        fab.setOnClickListener {_->
             val i = Intent(this, NewJournalActivity::class.java)
-            startActivityForResult(i,RC_SECOND_ACTIVITY)
+            startActivityForResult(i,RC_UPDATED_JOURNAL)
         }
 
         //Click to view list entry
@@ -38,10 +38,14 @@ class MainActivity : AppCompatActivity() {
                 _: AdapterView<*>?, _: View?, position: Int, _: Long ->
             val extraTitle = dataArray[position].title
             val extraDescription = dataArray[position].description
+            val extraTimeStamp=dataArray[position].timestamp
             val i = Intent(this, ViewJournalActivity::class.java)
             i.putExtra("viewTitle", extraTitle)
             i.putExtra("viewDescription", extraDescription)
-            startActivity(i)
+            i.putExtra("viewTimeStamp", extraTimeStamp)
+
+            //You want a result, if the user edits a journal entry from the journal view.
+            startActivityForResult(i,RC_UPDATED_JOURNAL)
         }
 
         //Long click to remove list entry. Uses AlertDialog for confirmation
@@ -82,19 +86,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-    if(requestCode==RC_SECOND_ACTIVITY){
-        if(resultCode== Activity.RESULT_OK){
-            val title = data?.getStringExtra("title")
-            val description= data?.getStringExtra("description")
-            val current = LocalDateTime.now()
-            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
-            val timestamp = current.format(formatter)
-            val newEntry = JournalEntry(title.toString(),description.toString(),timestamp)
-            preferenceManager.saveJournal(newEntry)
-            updateListView()
+        if(requestCode==RC_UPDATED_JOURNAL){
+            if(resultCode== Activity.RESULT_OK){
+                val title = data?.getStringExtra("title")
+                val description= data?.getStringExtra("description")
+                val current = LocalDateTime.now()
+                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+                val timestamp = current.format(formatter)
+                val newEntry = JournalEntry(title.toString(),description.toString(),timestamp)
+                preferenceManager.saveJournal(newEntry)
+                updateListView()
+            }
         }
     }
-}
 }
 
 
