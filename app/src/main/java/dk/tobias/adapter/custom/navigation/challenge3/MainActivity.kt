@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.Toolbar
 import android.view.Menu
@@ -52,11 +51,11 @@ class MainActivity : AppCompatActivity() {
             alert.setMessage(getString(R.string.alertDeleteConfirmationText))
             alert.setPositiveButton(getString(R.string.alertSetPositiveButtonText)) { _, _->
                 //Delete list entry
-                //preferenceManager.removeJournal(dataArray[position])
+                preferenceManager.removeJournal(dataArray[position],dataArray)
                 dataArray.remove(dataArray[position])
-                journalAdapter.notifyDataSetChanged()
+                updateListView()
             }
-            alert.setNegativeButton(getString(R.string.alertSetNegativeButtonText)){ dialog, which ->
+            alert.setNegativeButton(getString(R.string.alertSetNegativeButtonText)){ _, _->
                 //Do nothing
             }
             val dialog: AlertDialog = alert.create()

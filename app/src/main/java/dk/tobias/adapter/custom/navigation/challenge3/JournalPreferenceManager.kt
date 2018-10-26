@@ -8,7 +8,7 @@ class JournalPreferenceManager(context: Context) {
     private val MY_PREF = "MySharedJournalPreference"
     private val PREFS_KEY_JOURNAL_SET = "MyJournalSetKey"
 
-    private var preference = context.getSharedPreferences(MY_PREF, Context.MODE_PRIVATE)
+    private val preference = context?.getSharedPreferences(MY_PREF, Context.MODE_PRIVATE)
 
     fun saveJournal(journal : JournalEntry) {
         val myJournalList = getHashSet()
@@ -24,13 +24,31 @@ class JournalPreferenceManager(context: Context) {
         editor.putStringSet(PREFS_KEY_JOURNAL_SET, myJournalList)
         editor.apply()
     }
-/*
-    fun removeJournal(journal : JournalEntry){
+
+    fun removeJournal(journal : JournalEntry, journalComplete:ArrayList<JournalEntry> ){
         val editor=preference.edit()
-        editor.remove(journal.title)
+        editor.remove(PREFS_KEY_JOURNAL_SET)
         editor.apply()
+
+        val myJournalList = getHashSet()
+        //Initialize Gson
+        val gson = Gson()
+
+        for (entry in journalComplete) {
+            val journalJsonString = gson.toJson(journal)
+            val entryJsonString = gson.toJson(entry)
+
+            if (entryJsonString == journalJsonString){}
+            else{
+                myJournalList.add(entryJsonString)
+                //Save list to preferences
+                val editor = preference.edit()
+                editor.putStringSet(PREFS_KEY_JOURNAL_SET, myJournalList)
+                editor.apply()
+            }
+        }
     }
-*/
+
     fun getSavedJournals() : ArrayList<JournalEntry> {
         val myJournalList = getHashSet()
 
